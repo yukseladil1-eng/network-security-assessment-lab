@@ -3,25 +3,21 @@
 The lab uses two Ubuntu virtual machines in UTM: an assessment client and a target server. Administrative SSH reaches the target through a separate host forwarding path. The diagram distinguishes the recorded test destination from management access.
 
 ```mermaid
-flowchart LR
-    subgraph HOST[UTM host]
-        ADMIN[Administrative SSH client]
-        FORWARD[Local forwarding endpoint<br/>127.0.0.1 TCP 2222]
-        ADMIN -->|SSH key used for management| FORWARD
-        subgraph VMS[Ubuntu virtual machines]
-            SECURITY[ubuntu-security<br/>Assessment address 10.10.10.10]
-            FILTER[Target UFW policy]
-            TARGET[ubuntu-target<br/>Assessment address 10.10.10.20]
-            SSH[SSH service<br/>TCP 22]
-            WEB[Temporary web services<br/>HTTP 8000 and HTTPS 8443]
-            SECURITY -->|Assessment traffic to TCP 22 8000 8443<br/>Temporary web rules on enp0s1| FILTER
-            FILTER --> TARGET
-            TARGET --- SSH
-            TARGET --- WEB
-        end
-        FORWARD -->|Management ingress enp0s2<br/>Allowed source 10.0.2.2| FILTER
+flowchart TB
+    ADMIN["Management client<br/>127.0.0.1 TCP 2222"]
+    SECURITY["ubuntu-security<br/>10.10.10.10"]
+    subgraph TARGET["ubuntu-target — 10.10.10.20"]
+        UFW["UFW<br/>Default incoming: deny"]
+        SSH["SSH<br/>TCP 22"]
+        WEB["Temporary HTTP / HTTPS<br/>TCP 8000 / 8443"]
+        UFW -->|Management allowed| SSH
+        UFW -.->|Web allow rules removed| WEB
     end
+    ADMIN -->|enp0s2 — source 10.0.2.2| UFW
+    SECURITY -->|enp0s1 — lab test traffic| UFW
 ```
+
+The final scan from `ubuntu-security` classified TCP 22, 8000 and 8443 as filtered. The temporary web services had no listeners in the separate target listing; their boxes show their lab role, not running services in the final state.
 
 ## Assessment path
 
