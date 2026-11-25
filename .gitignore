@@ -1,0 +1,44 @@
+# Private keys and authentication material
+.ssh/
+id_rsa*
+id_dsa*
+id_ecdsa*
+id_ed25519*
+*ed25519*
+*private*key*
+server.key
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore
+.env
+.env.*
+!.env.example
+*credentials*
+*passwords*
+*secrets*
+
+# Raw captures, virtual machines, exports and private working material
+*.pcap
+*.pcapng
+*.cap
+*.utm/
+*.qcow2
+*.vmdk
+*.vdi
+*.iso
+raw/
+private/
+lab-evidence-review/
+*conversation*export*
+
+# Local metadata and build caches
+.DS_Store
+__pycache__/
+*.py[cod]
+.venv/
+node_modules/
+tmp/
+*.log
